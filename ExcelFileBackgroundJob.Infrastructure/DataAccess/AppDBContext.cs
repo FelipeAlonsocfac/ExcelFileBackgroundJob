@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using ExcelFileBackgroundJob.Core.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace ExcelFileBackgroundJob.Infrastructure.DataAccess;
 
@@ -13,6 +14,6 @@ public class AppDBContext : DbContext
         base.OnModelCreating(modelBuilder);
     }
 
-    //public DbSet<Customer> Customer { get; set; }
-    //public DbSet<ExcelLogs> ExcelLogs { get; set; }
+    public virtual DbSet<tblCustomer> Customer { get; set; }
+    public virtual DbSet<tblLog> ExcelLogs { get; set; }
 }
