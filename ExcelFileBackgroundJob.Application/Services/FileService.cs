@@ -21,8 +21,11 @@ public class FileService : IFileService
         try
         {
             using var stream = new FileStream(saveToPath, FileMode.Open);
-            reader = ExcelReaderFactory.CreateBinaryReader(stream);
-
+            if (saveToPath.Contains(".xlsx"))
+                reader = ExcelReaderFactory.CreateOpenXmlReader(stream);
+            else
+                reader = ExcelReaderFactory.CreateBinaryReader(stream);
+            
             DataSet ds = new DataSet();
             ds = reader.AsDataSet();
             reader.Close();
