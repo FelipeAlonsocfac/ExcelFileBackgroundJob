@@ -18,45 +18,66 @@ public class FileService : IFileService
 
     public async Task ProcessFileAsync(string saveToPath)
     {
-        using var stream = new FileStream(saveToPath, FileMode.Open);
-        reader = ExcelReaderFactory.CreateBinaryReader(stream);
-
-        DataSet ds = new DataSet(); 
-        ds = reader.AsDataSet();
-        reader.Close();
-        
-        if (ds != null && ds.Tables.Count > 0)
+        try
         {
-            // Read the the Table
-            DataTable serviceDetails = ds.Tables[0];
-            
+            using var stream = new FileStream(saveToPath, FileMode.Open);
+            reader = ExcelReaderFactory.CreateBinaryReader(stream);
 
-            for (int i = 1; i < serviceDetails.Rows.Count; i++)
+            DataSet ds = new DataSet();
+            ds = reader.AsDataSet();
+            reader.Close();
+
+            if (ds != null && ds.Tables.Count > 0)
             {
-                tblCustomer details = new tblCustomer();
-                tblLog log = new tblLog();
-                details.Name = serviceDetails.Rows[i][0].ToString();
-                details.LastName = serviceDetails.Rows[i][1].ToString();
-                details.Phone = serviceDetails.Rows[i][3].ToString();
-                details.Email = serviceDetails.Rows[i][2].ToString();
-                details.Country = serviceDetails.Rows[i][4].ToString();
-                if (string.IsNullOrEmpty(details.Phone))
+                // Read the the Table
+                DataTable serviceDetails = ds.Tables[0];
+
+
+                for (int i = 1; i < serviceDetails.Rows.Count; i++)
                 {
-                    log.Description = "'Phone '";
+                    TblCustomer details = new ();
+                    TblLog log = new();
+                    details.Name = serviceDetails.Rows[i][0].ToString();
+                    details.LastName = serviceDetails.Rows[i][1].ToString();
+                    details.Phone = serviceDetails.Rows[i][2].ToString();
+                    details.Email = serviceDetails.Rows[i][3].ToString();
+                    details.Country = serviceDetails.Rows[i][4].ToString();
+                    if (string.IsNullOrEmpty(details.Name))
+                    {
+                        log.Description += "'Name '";
+                    }
+                    if (string.IsNullOrEmpty(details.LastName))
+                    {
+                        log.Description += "'LastName '";
+                    }
+                    if (string.IsNullOrEmpty(details.Email))
+                    {
+                        log.Description += "'Email '";
+                    }
+                    if (!string.IsNullOrEmpty(log.Description))
+                    {
+                        log.ErrorType = 1;
+                        log.UserId = 1;
+                        log.Application = "ExcelFileBackgroundJob";
+                        log.Module = nameof(FileService);
+                        log.Method = nameof(ProcessFileAsync);
+                        log.ErrorDate = DateTime.UtcNow;
+
+                        await appDBContext.ExcelLogs.AddAsync(log);
+                    }
+                    else
+                    {
+                        await appDBContext.Customer.AddAsync(details);
+                    }
+                    await appDBContext.SaveChangesAsync();
                 }
-                if (string.IsNullOrEmpty(details.Country))
-                {
-                    log.Description = "'Country '";
-                }
-                if (log != null)
-                {
-                    await appDBContext.ExcelLogs.AddAsync(log);
-                }
-                else {
-                    await appDBContext.Customer.AddAsync(details);
-                }
-                
             }
         }
+        catch (Exception ex)
+        {
+
+            throw;
+        }
+        
     }
 }

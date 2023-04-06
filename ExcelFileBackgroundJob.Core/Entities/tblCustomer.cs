@@ -1,23 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace ExcelFileBackgroundJob.Core.Entities;
 
-namespace ExcelFileBackgroundJob.Core.Entities
+public class TblCustomer
 {
-    public class tblCustomer
-    {
-        
-        public int CustomerId { get; set; }
-
-        public string? Name { get; set; }
-
-        public string? LastName { get; set; }
-
-        public string? Phone { get; set; }
-	    public string? Email { get; set; }
-	    public string? Country { get; set; }
-
-    }
+    public int CustomerId { get; set; }
+    public string? Name { get; set; }
+    public string? LastName { get; set; }
+    public string? Phone { get; set; }
+    public string? Email { get; set; }
+	public string? Country { get; set; }
 }

@@ -34,7 +34,7 @@ public class FileController : ControllerBase
             var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             cts.CancelAfter(TimeSpan.FromSeconds(3)); // wait max 3 seconds
             var fileWritten = await _fileProcessingService.AddFileAsync(_filepath, cts.Token);
-
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             if (fileWritten)
             {
                 //send notification: file could not be processed
@@ -50,7 +50,7 @@ public class FileController : ControllerBase
 
     private async Task<bool> VerifyFileAndSave(FileUploadModel fileDetails)
     {
-        if (fileDetails == null || !fileDetails.FileType.Contains("xlsx") || !fileDetails.FileType.Contains("xls") || !(fileDetails.FileDetails.Length > 0))
+        if (fileDetails == null || !fileDetails.FileType.Contains("xls") || !(fileDetails.FileDetails.Length > 0))
         {
             return false;
         }

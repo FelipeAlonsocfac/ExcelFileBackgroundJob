@@ -1,6 +1,7 @@
 using ExcelFileBackgroundJob.Application.Interfaces;
 using ExcelFileBackgroundJob.Application.Services;
 using ExcelFileBackgroundJob.Infrastructure.DataAccess;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,11 @@ builder.Services.AddDbContext<AppDBContext>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddSingleton<FileProcessingService>();
 builder.Services.AddHostedService<FileProcessingHostedService>();
+var connstring = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<AppDBContext>(options =>
+{
+    options.UseSqlServer(connstring);
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
